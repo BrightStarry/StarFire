@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TFriendApplyDao">
+<!-- 好友申请mapper -->
+	
+	<sql id="allField">
+		apply_id,user_id_a,user_id_b,create_time,state
+	</sql>
+	<sql id="noIdField">
+		user_id_a,user_id_b,create_time,state
+	</sql>
+	
+	<!-- 查询好友申请记录详情 包括用户A的详细信息 -->
+	<select id="queryDetailById" resultType="tFriendApply">
+		SELECT
+			tfa.apply_id,
+			tfa.user_id_a,
+			tfa.user_id_b,
+			tfa.create_time,
+			tfa.state,
+			<if test='type == "A"'>
+				tu.user_id as 'tUserA.user_id',
+				tu.name as 'tUserA.name',
+				tu.head_image as 'tUserA.head_image',
+				tu.phone as 'tUserA.phone',
+				tu.mail as 'tUserA.mail',
+				tu.sex as 'tUserA.sex',
+				tu.state as 'tUserA.state',
+				tu.intro as 'tUserA.intro'
+			</if>
+			<if test='type == "B"'>
+				tu.user_id as 'tUserB.user_id',
+				tu.name as 'tUserB.name',
+				tu.head_image as 'tUserB.head_image',
+				tu.phone as 'tUserB.phone',
+				tu.mail as 'tUserB.mail',
+				tu.sex as 'tUserB.sex',
+				tu.state as 'tUserB.state',
+				tu.intro as 'tUserB.intro'
+			</if>
+		FROM
+			t_friend_apply tfa
+		INNER JOIN
+			t_user tu
+		ON	
+			<if test='type == "A"'>
+				tfa.user_id_a = tu.user_id
+			</if>
+			<if test='type == "B"'>
+				tfa.user_id_b = tu.user_id
+			</if>
+		WHERE
+			tfa.apply_id = #{applyId}
+	</select>
+	
+	
+	
+	<!-- 增加好友申请 -->
+	<insert id="addOne">
+		INSERT INTO
+			t_friend_apply(user_id_a,user_id_b)
+		VALUE
+			(#{userIdA},#{userIdB})
+	</insert>
+	
+	<!-- 修改好友申请状态   根据两个用户id -->
+	<update id="updateByPairId" >
+		UPDATE 
+			t_friend_apply
+		SET
+			state = #{state}
+		WHERE
+			user_id_a = #{userIdA}
+			and user_id_b = #{userIdB}
+	</update>
+	
+	<!-- 修改好友申请状态   根据申请id -->
+	<update id="updateByApplyId" >
+		UPDATE 
+			t_friend_apply
+		SET
+			state = #{state}
+		WHERE
+			apply_id = #{applyId}
+	</update>
+	
+	<!-- 验证是否在申请中 -->
+	<select id="verifyIsFriendApply" resultType="integer">
+		SELECT 	
+			COUNT(apply_id)
+		FROM
+			t_friend_apply
+		WHERE
+			user_id_a = #{userIdA}
+			and user_id_b = #{userIdB}
+			and state in (-1,1);
+	</select>
+	
+	<!-- 查询某用户所有被申请好友记录 一个月内 -->
+	<select id="queryFriendApplyByUserIdB" parameterType="long" resultType="tFriendApply">
+		SELECT 
+			tfa.apply_id,
+			tfa.user_id_a,
+			tfa.user_id_b,
+			tfa.create_time,
+			tfa.state,
+			tu.name as 'tUserA.name'
+			
+		FROM
+			t_friend_apply tfa
+		INNER JOIN 	
+			t_user tu
+		ON 
+			tfa.user_id_a = tu.user_id
+		WHERE
+			tfa.user_id_b = #{userIdB}
+			and DATE_SUB(CURDATE(),INTERVAL 30 DAY)<![CDATA[<=]]> tfa.create_time 
+		ORDER BY
+			tfa.create_time 
+	</select>
+	
+	
+	
+	
+  
+</mapper>

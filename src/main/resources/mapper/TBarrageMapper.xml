@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TBarrageDao">
+<!-- 弹幕mapper -->
+	
+	<sql id="allField">
+		barrage_id,user_id,create_time,content
+	</sql>
+	<sql id="noIdField">
+		user_id,create_time,content
+	</sql>
+	
+	
+	<!-- 增加弹幕 -->	
+	<insert id="addBarrage" >
+		INSERT INTO 
+			t_barrage(user_id,content)
+		VALUE(#{userId},#{content})
+	</insert>
+	
+	
+	
+	
+	
+  
+</mapper>

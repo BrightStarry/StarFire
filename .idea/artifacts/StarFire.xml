@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="StarFire">
+    <output-path>$PROJECT_DIR$/out/artifacts/StarFire</output-path>
+    <root id="archive" name="StarFire.war">
+      <element id="artifact" artifact-name="StarFire:war exploded" />
+    </root>
+  </artifact>
+</component>

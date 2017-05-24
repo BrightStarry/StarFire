@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TUserDetailDao">
+
+	<cache
+			eviction="FIFO"
+			flushInterval="60000"
+			size="512"
+			readOnly="true" />
+<!-- 用户详细信息 -->
+	<sql id="allField">
+		user_id,sms_create_time,sms_end_time,money,birthdate,
+		personality,height,weight,color,province,city,district
+	</sql>
+	<sql id="noIdField">
+		user_id,sms_create_time,sms_end_time,money,birthdate,
+		personality,height,weight,color,,province,city,district
+	</sql>
+	
+	<!-- 查询用户详细信息 -->
+	<select id="queryByUserId" parameterType="long" resultType="tUserDetail">
+		SELECT 
+			<include refid="allField"></include>
+		FROM 	
+			t_user_detail
+		WHERE
+			user_id = #{userId}
+	</select>
+	
+	<!-- 增加用户详细信息记录 -->
+	<insert id="addOne" parameterType="long">
+		INSERT INTO 
+			t_user_detail(user_id)
+		VALUE(#{userId})
+	</insert>
+	
+	<!-- 修改用户详细信息 -->
+	<update id="updateByUserId">
+		UPDATE 
+			t_user_detail
+		<set>
+			<if test="smsCreateTime != null">
+			sms_create_time = #{smsCreateTime},
+			</if>
+			<if test="smsEndTime != null">
+			sms_end_time = #{smsEndTime},
+			</if>
+			<if test="money != null and money != ''">
+			money = #{money},
+			</if>
+			<if test="birthdate != null">
+			birthdate = #{birthdate},
+			</if>
+			<if test="personality != null and personality != ''">
+			personality = #{personality},
+			</if>
+			<if test="height != null and height != ''">
+			height = #{height},
+			</if>
+			<if test="weight != null and weight != ''">
+			weight = #{weight},
+			</if>
+			<if test="color != null and color != ''">
+			color = #{color},
+			</if>
+			<if test="province != null and province != ''">
+			province = #{province},
+			</if>
+			<if test="city != null and city != ''">
+			city = #{city},
+			</if>
+			<if test="district != null and district != ''">
+			district = #{district}
+			</if>
+		</set>
+		WHERE
+			user_id = #{userId}
+	</update>
+  
+</mapper>

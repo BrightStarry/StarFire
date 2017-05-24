@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TMessageRecordDao">
+<!-- 消息推送记录mapper -->
+	
+	<sql id="allField">
+		message_id,user_id,create_time,content,state
+	</sql>
+	<sql id="noIdField">
+		user_id,create_time,content,state
+	</sql>
+	
+	<!-- 查询推送消息 详情 -->
+	<select id="queryDetailById" parameterType="long" resultType="tMessageRecord">
+		SELECT 
+			<include refid="allField"></include>
+		FROM
+			t_message_record
+		WHERE
+			message_id = #{messageId}
+	</select>
+	
+	<!-- 批量增加 -->
+	<insert id="addMessageRecordList" parameterType="Long[]">
+		INSERT INTO
+			t_message_record(user_id,content)
+		VALUES
+			<foreach collection="array" item="userId" separator=",">
+				(#{userId},#{content})
+			</foreach>
+	</insert>
+	
+	<!-- 增加 -->
+	<insert id="addMessageRecord" >
+		INSERT INTO
+			t_message_record(user_id,content)
+		VALUES
+			(#{userId},#{content})
+	</insert>
+	
+	<!-- 修改状态 为 已读 -->
+	<update id="updateState" parameterType="long">
+		UPDATE 
+			t_message_record
+		SET
+			state = 1
+		WHERE
+			message_id = #{messageId}
+	</update>
+	
+	<!-- 查询用户所有的被推送记录，一个月内 -->
+	<select id="queryByUserId" parameterType="long" resultType="tMessageRecord">
+		SELECT 
+			<include refid="allField"></include>
+		FROM
+			t_message_record
+		WHERE
+			user_id = #{userId}
+			and DATE_SUB(CURDATE(),INTERVAL 30 DAY) <![CDATA[<=]]> create_time 
+	</select>
+  
+</mapper>

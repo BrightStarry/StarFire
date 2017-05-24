@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,,,, -->
+<!-- 	<appender name="STDOUT" class="ch.qos.logback.core.FileAppender"> -->
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<!-- 		<file>C:\Users\97038\workspace\StarFire\src\main\resources\test.log</file> -->
+		<append>true</append>
+		<encoder>
+			<pattern>日期:%d{HH:mm:ss} 线程:[%thread] 等级:%-5level 类名:%logger{36} - 信息:%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

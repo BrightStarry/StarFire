@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TUserLoginDao">
+<!-- 用户登录记录mapper -->
+	
+	<sql id="allField">
+		login_id,user_id,create_time,ip
+	</sql>
+	<sql id="noIdField">
+		user_id,create_time,ip
+	</sql>
+	
+	<!-- 增加记录 -->
+	<insert id="addOne" >
+		INSERT INTO 
+			t_user_login(user_id,ip)
+		VALUE(#{userId},#{ip})
+	</insert>
+	
+	
+	
+  
+</mapper>

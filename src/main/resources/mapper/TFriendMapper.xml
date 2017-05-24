@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TFriendDao">
+<!-- 好友mapper -->
+	
+	<sql id="allField">
+		friend_id,user_id_a,user_id_b,state
+	</sql>
+	<sql id="noIdField">
+		user_id_a,user_id_b,state
+	</sql>
+	
+	<!-- 修改状态 -->
+	<update id="updateState" >
+		UPDATE 
+			t_friend
+		SET
+			state = #{state}
+		WHERE
+			user_id_a = #{userIdA}
+			AND user_id_b = #{userIdB}
+	</update>
+	
+	
+	
+	<!-- 增加好友关系 -->
+	<insert id="addOne">
+		INSERT INTO 
+			t_friend(user_id_a,user_id_b)
+		VALUE(#{userIdA},#{userIdB})
+	</insert>
+	
+	<!-- 验证是否好友 -->
+	<select id="verifyIsFriend" resultType="integer">
+		SELECT 
+			COUNT(friend_id)
+		FROM 
+			t_friend
+		WHERE
+			user_id_a = #{userIdA}
+			and user_id_b = #{userIdB}
+	</select>
+	
+	<!-- 删除好友关系 -->
+	<delete id="deleteFriend">
+		DELETE FROM 
+			t_friend
+		WHERE 
+			user_id_a = #{userIdA}
+			and user_id_b = #{userIdB}
+	</delete>
+	
+	<!-- 查询所有好友列表 -->
+	<select id="queryAllByUserId" parameterType="long" resultType="tFriend">
+		SELECT 
+			tf.friend_id,
+			tf.user_id_a,
+			tf.user_id_b,
+			tf.state,
+			tu.user_id 'tUserA.user_id',
+			tu.name 'tUserA.name',
+			tu.head_image 'tUserA.head_image',
+			tu.intro 'tUserA.intro',
+			tu.phone 'tUserA.phone',
+			tu.mail 'tUserA.mail',
+			tu.sex 'tUserA.sex'
+		FROM 
+			t_friend tf
+		INNER JOIN 
+			t_user tu
+		ON 
+			tf.user_id_a = tu.user_id
+		WHERE
+			tf.user_id_b = #{userId}
+	</select>
+	
+	
+	
+	
+	
+  
+</mapper>

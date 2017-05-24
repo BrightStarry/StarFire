@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+	<!-- 注解驱动，默认开启了对json和xml的支持 -->
+	<mvc:annotation-driven>
+		<!-- 消息转换器 将responsebody 返回的编码改成UTF-8-->
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes" value="text/html;charset=UTF-8" />
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 配置默认扫描的包 -->
+	<context:component-scan base-package="com.starfire.controller" />
+
+	<!-- 静态资源访问配置 -->
+	<mvc:resources location="/WEB-INF/resources/" mapping="/resources/**" />
+
+	<!-- 视图解析器 -->
+	<bean id="jspViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+	<!-- 上传 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="10240000" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="resolveLazily" value="true" />
+	</bean>
+
+	<!-- 拦截器-->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!--要拦截的请求 -->
+			<mvc:mapping path="/**"/>
+			<!--不拦截的请求 -->
+			<mvc:exclude-mapping path=""/>
+			<!--实现类 -->
+			<bean class="com.starfire.util.LimitInterceptor">
+				<property name="passUrls">
+					<list>
+						<value>/resources</value>
+						<value>/queryByType</value>
+						<value>/index</value>
+						<value>/query/userInfo</value>
+						<value>/indexBody</value>
+						<value>/user/login</value>
+						<value>/imageCheckCodeGenerator</value>
+						<value>/register</value>
+						<value>/verifyImageCheckCode</value>
+						<value>/checkPhone</value>
+						<value>/sendCode</value>
+						<value>/verifyCheckCode</value>
+						<value>/exit</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- 自定义异常处理 -->
+	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="com.starfire.exception.SessionTimeoutException">/common/sessionTimeout</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

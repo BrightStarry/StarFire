@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.starfire.dao.TUserDao">
+<!-- 用户基本信息mapper -->
+	
+	<sql id="allField">
+		user_id,name,head_image,intro,phone,mail,password,sex,create_time,state,last_time
+	</sql>
+	<sql id="noIdField">
+		name,head_image,intro,phone,mail,password,sex,create_time,state,last_time
+	</sql>
+	
+	<!-- 查询所有用户id -->
+	<select id="queryAllUserId" resultType="long">
+		SELECT
+			user_id
+		FROM
+			t_user
+	</select>
+	
+	
+	
+	<!-- 模糊查询 根据 name -->
+	<select id="queryByLike" parameterType="string" resultType="tUser">
+		SELECT 
+			user_id,name
+		FROM
+			t_user
+		WHERE
+			name LIKE CONCAT('%',#{name},'%')
+		ORDER BY 
+			name			
+	</select>
+	
+	
+	<!-- 批量查询用户信息 -->
+	<select id="queryByUserIdList" parameterType="list" resultType="tUser">
+		SELECT 
+			<include refid="allField"></include>
+		FROM
+			t_user
+		WHERE
+			user_id in
+			<foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+				#{userId}
+			</foreach>
+	</select>
+	
+	
+	
+	
+	<!-- 注册 -->
+	<insert id="register" >
+		INSERT INTO 
+			t_user(phone,password,head_image)
+		VALUE(#{phone},#{password},#{headImage})
+	</insert>
+	
+	<!-- 查询手机号码   or 邮箱 or  昵称   是否被注册  只传一个  -->
+	<select id="checkAccount"  resultType="integer">
+		SELECT
+			count(user_id)
+		FROM 	
+			t_user
+		<where>
+			<if test="name != null and name != ''">
+				name = #{name} 
+			</if>
+			<if test="phone != null and phone != ''">
+				phone = #{phone} 
+			</if>
+			<if test="mail != null and mail != ''">
+				mail = #{mail} 
+			</if>
+		</where>
+		
+	</select>
+	
+	
+	<!-- 登录 -->
+	<select id="login" resultType="tUser">
+		SELECT 
+			<include refid="allField"></include>
+		FROM 
+			t_user
+		WHERE
+			phone = #{phone}
+			and password = #{password}
+	</select>
+	
+	<!-- 查询用户信息 根据id 或 name 或 phone-->
+	<select id="queryOneByIdNamePhoneOr" resultType="tUser">
+		SELECT
+			<include refid="allField"></include>
+		FROM 
+			t_user
+		<where>
+			<if test="name != null and name != ''">
+				name = #{name} 
+			</if>
+			<if test="userId != null and userId != ''">
+				AND user_id = #{userId} 
+			</if>
+			<if test="phone != null and phone != ''">
+				AND phone = #{phone} 
+			</if>
+		</where>
+	</select>
+	
+	<!-- 修改用户 任意信息 -->
+	<update id="updateById" parameterType="tUser">
+		UPDATE 
+			t_user
+		<set>
+			<if test="name != null and name != ''">
+			name = #{name},
+			</if>
+			<if test="headImage != null and headImage != ''">
+			head_image = #{headImage},
+			</if>
+			<if test="intro != null and intro != ''">
+			intro = #{intro},
+			</if>
+			<if test="phone != null and phone != ''">
+			phone = #{phone},
+			</if>
+			<if test="mail != null and mail != ''">
+			mail = #{mail},
+			</if>
+			<if test="password != null and password != ''">
+			password = #{password},
+			</if>
+			<if test="sex != null and sex != ''">
+			sex = #{sex},
+			</if>
+			<if test="state != null and state != ''">
+			state = #{state},
+			</if>
+			<if test="lastTime != null">
+			last_time = #{lastTime},
+			</if>
+		</set>
+		WHERE
+			user_id = #{userId}
+	</update>
+	
+	
+	
+  
+</mapper>

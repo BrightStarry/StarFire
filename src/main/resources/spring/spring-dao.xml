@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 导入配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+	<!-- dataSource -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<!-- 连接池 -->
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+<!-- 		<property name="maxIdle" value="${jdbc.maxIdle}"/> -->
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		<property name="minIdle" value="${jdbc.minIdle}"/>
+	</bean>
+	
+	<!-- sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- dataSource -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- mapper文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml" />
+		<!-- domain -->
+		<property name="typeAliasesPackage" value="com.starfire.domain"/>
+		<!-- myBatis配置文件 -->
+		<property name="configLocation" value="classpath:MyBatis.xml"/>
+	</bean>
+	
+	<!-- mapper扫描器配置 dao层的代理类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- dao包 -->
+		<property name="basePackage" value="com.starfire.dao"/>
+		<!-- sqlSessionFactory -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+	<!-- redisDao -->	
+</beans>
